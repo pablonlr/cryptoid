@@ -32,6 +32,20 @@ func (client *CryptoIDClient) MNCount(coin string) (int, error) {
 	return i, nil
 }
 
+func (client *CryptoIDClient) BlockCount(coin string) (int, error) {
+	m := make(map[string]string)
+	m["q"] = "getblockcount"
+	resp, err := client.GetRequest(coin, m)
+	if err != nil {
+		return 0, err
+	}
+	i, err := strconv.Atoi(string(resp))
+	if err != nil {
+		return 0, err
+	}
+	return i, nil
+}
+
 func (client *CryptoIDClient) ListUnspent(coin string, address string) (*ListUnspentResponse, error) {
 	m := make(map[string]string)
 	m["q"] = "unspent"

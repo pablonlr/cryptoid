@@ -1,6 +1,9 @@
 package cryptoid
 
-import "strconv"
+import (
+	"encoding/json"
+	"strconv"
+)
 
 type ListUnspentResponse struct {
 	UnspentOutputs []UTXOResponse `json:"unspent_outputs"`
@@ -29,17 +32,18 @@ func (client *CryptoIDClient) MNCount(coin string) (int, error) {
 	return i, nil
 }
 
-func (client *CryptoIDClient) ListUnspent(coin string, address string) (int, error) {
+func (client *CryptoIDClient) ListUnspent(coin string, address string) (*ListUnspentResponse, error) {
 	m := make(map[string]string)
 	m["q"] = "unspent"
 	m["active"] = address
 	resp, err := client.GetRequest(coin, m)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	i, err := strconv.Atoi(string(resp))
+	utxos := &ListUnspentResponse{}
+	err = json.Unmarshal(resp, utxos)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return i, nil
+	return utxos, nil
 }

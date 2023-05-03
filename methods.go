@@ -61,3 +61,19 @@ func (client *CryptoIDClient) ListUnspent(coin string, address string) (*ListUns
 	}
 	return utxos, nil
 }
+
+func (client *CryptoIDClient) GetBalancesForAddressSlice(coin string, addresses []string) (map[string]float64, error) {
+	m := make(map[string]string)
+	m["q"] = "getbalances"
+
+	resp, err := client.PostRequest(coin, m, addresses)
+	if err != nil {
+		return nil, err
+	}
+	balances := make(map[string]float64)
+	err = json.Unmarshal(resp, &balances)
+	if err != nil {
+		return nil, err
+	}
+	return balances, nil
+}
